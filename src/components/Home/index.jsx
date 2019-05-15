@@ -16,7 +16,7 @@ class Home extends React.Component {
   componentDidMount() {
     const { onLoad } = this.props;
 
-    axios('http://localhost:8000/api/articles')
+    axios('https://chatproduct.tk/wordpress/index.php/wp-json/wp/v2/posts')
       .then((res) => onLoad(res.data));
   }
 
@@ -29,13 +29,11 @@ class Home extends React.Component {
 
   handleEdit(article) {
     const { setEdit } = this.props;
-
     setEdit(article);
   }
 
   render() {
     const { articles } = this.props;
-
     return (
       <div className="container">
         {/* <div className="row pt-5">
@@ -45,13 +43,13 @@ class Home extends React.Component {
           <div className="col-12 col-lg-6 offset-lg-3">
             {articles.map((article) => {
               return (
-                <div className="card my-3" key = {article['_id']}>
+                <div className="card my-3" key = {article['id']}>
                   <div className="card-header">
-                    {article.title}
+                    {article['title']['rendered']}
                   </div>
                   <div className="card-body">
-                    {article.body}
-                    <p className="mt-5 text-muted"><b>{article.author}</b> {moment(new Date(article.createdAt)).fromNow()}</p>
+                    {article['excerpt']['rendered']}
+                    <p className="mt-5 text-muted"><b>{article.author}</b> {moment(new Date(article.date)).fromNow()}</p>
                   </div>
                   <div className="card-footer">
                     <div className="row">

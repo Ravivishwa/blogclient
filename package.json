@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "webpack.config.js",
   "private": true,
-  "engines":{
-    "node" :"10.15.3",
-    "npm" :"6.4.1"
+  "engines": {
+    "node": "10.15.3",
+    "npm": "6.4.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
