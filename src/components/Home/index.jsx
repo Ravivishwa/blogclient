@@ -4,6 +4,7 @@ import moment from 'moment';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
 import '../../../resources/scss/style.scss';
+import Categories from '../../components/Home/Categories'
 
 class Home extends React.Component {
   constructor(props) {
@@ -48,6 +49,7 @@ class Home extends React.Component {
     return (
       <div className="container">
         <div className="row pt-5">
+        <Categories/>
           <div className="col-12 col-lg-6 offset-lg-3">
             {articles.map((article) => {
               return (

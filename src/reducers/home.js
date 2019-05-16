@@ -1,4 +1,5 @@
 export default (state={articles: [], total: null, current_page: 1,per_page: 5}, action) => {
+  console.log("dad",action.data)
   switch(action.type) {    
     case 'HOME_PAGE_LOADED':
       return {
@@ -39,6 +40,11 @@ export default (state={articles: [], total: null, current_page: 1,per_page: 5}, 
       return {
         ...state,
         current_page:action.data
+      };
+      case 'LOAD_CATEGORIES':
+      return{
+        ...state,
+        categories:action.data
       }
     default:
       return state;
