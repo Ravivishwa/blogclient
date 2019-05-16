@@ -1,10 +1,11 @@
-export default (state={articles: []}, action) => {
-  switch(action.type) {
+export default (state={articles: [], total: null, current_page: 1,per_page: 5}, action) => {
+  switch(action.type) {    
     case 'HOME_PAGE_LOADED':
-    console.log("actionm",action.data)
       return {
         ...state,
-        articles: action.data,
+        articles: action.data.data,
+        total:action['data']['headers']['x-wp-total'],
+        per_page: 5
       };
     case 'SUBMIT_ARTICLE':
       return {
@@ -33,6 +34,11 @@ export default (state={articles: []}, action) => {
           return article;
         }),
         articleToEdit: undefined,
+      };
+      case 'UPDATE_PAGE_LINK':
+      return {
+        ...state,
+        current_page:action.data
       }
     default:
       return state;

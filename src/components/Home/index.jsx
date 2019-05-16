@@ -2,43 +2,51 @@ import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
-
-import { Form } from '../../components/Article';
+import parse from 'html-react-parser';
+import '../../../resources/scss/style.scss';
 
 class Home extends React.Component {
   constructor(props) {
     super(props);
-
-    this.handleDelete = this.handleDelete.bind(this);
-    this.handleEdit = this.handleEdit.bind(this);
   }
 
-  componentDidMount() {
+  componentDidMount() {    
+    this.makeHttpRequestWithPage(1); 
+  }
+
+  makeHttpRequestWithPage(pageNumber){
     const { onLoad } = this.props;
-
-    axios('https://chatproduct.tk/wordpress/index.php/wp-json/wp/v2/posts')
-      .then((res) => onLoad(res.data));
+    const { per_page } = this.props;
+    const { upDatepage } = this.props;
+    upDatepage(pageNumber)
+    axios(`https://chatproduct.tk/wordpress/index.php/wp-json/wp/v2/posts?page=${pageNumber}&per_page=${per_page}`)
+    .then((res) => onLoad(res));
   }
-
-  handleDelete(id) {
-    const { onDelete } = this.props;
-
-    return axios.delete(`http://localhost:8000/api/articles/${id}`)
-      .then(() => onDelete(id));
-  }
-
-  handleEdit(article) {
-    const { setEdit } = this.props;
-    setEdit(article);
-  }
+  
 
   render() {
+
+    let renderPageNumbers;
     const { articles } = this.props;
+    const { total } = this.props;
+    const { per_page } = this.props;
+    const { current_page } = this.props;
+
+    const pageNumbers = [];
+    if (total !== null) {
+      for (let i = 1; i <= Math.ceil(total / per_page); i++) {
+        pageNumbers.push(i);
+      }
+      
+      renderPageNumbers = pageNumbers.map(number => {
+        let classes = current_page === number ? "active" : '';
+        return (
+          <span key={number} className={classes} onClick={() => this.makeHttpRequestWithPage(number)}>{number}</span>
+        );
+      });
+    }
     return (
       <div className="container">
-        {/* <div className="row pt-5">
-           <Form />
-        </div> */}
         <div className="row pt-5">
           <div className="col-12 col-lg-6 offset-lg-3">
             {articles.map((article) => {
@@ -48,23 +56,19 @@ class Home extends React.Component {
                     {article['title']['rendered']}
                   </div>
                   <div className="card-body">
-                    {article['excerpt']['rendered']}
-                    <p className="mt-5 text-muted"><b>{article.author}</b> {moment(new Date(article.date)).fromNow()}</p>
-                  </div>
-                  <div className="card-footer">
-                    <div className="row">
-                      <button onClick={() => this.handleEdit(article)} className="btn btn-primary mx-3">
-                        Edit
-                      </button>
-                      <button onClick={() => this.handleDelete(article._id)} className="btn btn-danger">
-                        Delete
-                      </button>
-                    </div>
+                    {parse(article['excerpt']['rendered'])}
+                    <p className="mt-5 text-muted">{moment(new Date(article.date)).fromNow()}</p>
                   </div>
                 </div>
               )
-            })}
+            })}          
+
           </div>
+        </div>
+        <div className="pagination">
+          <span onClick={() => this.makeHttpRequestWithPage(1)}>&laquo;</span>
+          {renderPageNumbers}
+          <span onClick={() => this.makeHttpRequestWithPage(4)}>&raquo;</span>
         </div>
       </div>
     );
@@ -73,12 +77,14 @@ class Home extends React.Component {
 
 const mapStateToProps = state => ({
   articles: state.home.articles,
+  total: state.home.total,
+  per_page: state.home.per_page,
+  current_page: state.home.current_page
 });
 
 const mapDispatchToProps = dispatch => ({
   onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
-  onDelete: id => dispatch({ type: 'DELETE_ARTICLE', id }),
-  setEdit: article => dispatch({ type: 'SET_EDIT', article }),
+  upDatepage: data => dispatch({ type: 'UPDATE_PAGE_LINK', data }),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
