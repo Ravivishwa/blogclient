@@ -3,6 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import { connect } from 'react-redux';
 import parse from 'html-react-parser';
+import Posts from '../Article/Posts'
 import '../../../resources/scss/style.scss';
 
 class Home extends React.Component {
@@ -27,11 +28,14 @@ class Home extends React.Component {
   render() {
 
     let renderPageNumbers;
+
+    
     const { articles } = this.props;
     const { total } = this.props;
     const { per_page } = this.props;
     const { current_page } = this.props;
-
+    const { content } = this.props;
+    const { excerpt } = this.props;
     const pageNumbers = [];
     if (total !== null) {
       for (let i = 1; i <= Math.ceil(total / per_page); i++) {
@@ -45,13 +49,22 @@ class Home extends React.Component {
         );
       });
     }
+
+     let  test = <div>cc</div>;
+
+    const { sendpost } = this.props;
+    let gotopost = (id,excerpt,content) => {
+      sendpost(id,excerpt,content)
+    }
+
     return (
       <div className="container">
         <div className="row pt-5">
           <div className="col-12 col-lg-6 offset-lg-3">
-            {articles.map((article) => {
+            <Posts props = {articles}/>
+            {/* {articles.map((article) => {
               return (
-                <div className="card my-3" key = {article['id']}>
+                <div className="card my-3" key = {article['id']} onClick={() => gotopost(article['id'],article['title']['rendered'],article['content']['rendered'])}>
                   <div className="card-header">
                     {article['title']['rendered']}
                   </div>
@@ -61,7 +74,7 @@ class Home extends React.Component {
                   </div>
                 </div>
               )
-            })}          
+            })}           */}
 
           </div>
         </div>
@@ -79,12 +92,17 @@ const mapStateToProps = state => ({
   articles: state.home.articles,
   total: state.home.total,
   per_page: state.home.per_page,
-  current_page: state.home.current_page
+  current_page: state.home.current_page,
+  excerpt:state.home.excerpt,
+  content:state.home.content
 });
 
 const mapDispatchToProps = dispatch => ({
   onLoad: data => dispatch({ type: 'HOME_PAGE_LOADED', data }),
   upDatepage: data => dispatch({ type: 'UPDATE_PAGE_LINK', data }),
+  sendpost : (id,excerpt,content) => dispatch({type: 'GO_TO_POST',data:{
+    id,excerpt,content
+  }}) 
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Home);
