@@ -1,12 +1,12 @@
-export default (state={articles: [], total: null, current_page: 1,per_page: 5}, action) => {
-  console.log(action)
+export default (state={articles: [], total: null, current_page: 1,per_page: 5,loading:true}, action) => {
   switch(action.type) {    
     case 'HOME_PAGE_LOADED':
       return {
         ...state,
         articles: action.data.data,
         total:action['data']['headers']['x-wp-total'],
-        per_page: 5
+        per_page: 5,
+        loading:false
       };
     case 'SUBMIT_ARTICLE':
       return {
@@ -43,7 +43,7 @@ export default (state={articles: [], total: null, current_page: 1,per_page: 5}, 
       };
       case 'GO_TO_POST':
       return {
-        ...state,
+        // ...state,
         excerpt:action.data.excerpt,
         content:action.data.content,
       }

@@ -1,9 +1,10 @@
 import React from 'react';
 import axios from 'axios';
-import moment from 'moment';
 import { connect } from 'react-redux';
+import Posts from '../Article/Posts';
+import Footer from '../Footer';
+import logo from '../../../resources/rolling.gif'
 import parse from 'html-react-parser';
-import Posts from '../Article/Posts'
 import '../../../resources/scss/style.scss';
 
 class Home extends React.Component {
@@ -27,15 +28,14 @@ class Home extends React.Component {
 
   render() {
 
-    let renderPageNumbers;
-
-    
+    let renderPageNumbers;    
     const { articles } = this.props;
     const { total } = this.props;
     const { per_page } = this.props;
     const { current_page } = this.props;
     const { content } = this.props;
     const { excerpt } = this.props;
+    const { loading } = this.props;
     const pageNumbers = [];
     if (total !== null) {
       for (let i = 1; i <= Math.ceil(total / per_page); i++) {
@@ -48,42 +48,38 @@ class Home extends React.Component {
           <span key={number} className={classes} onClick={() => this.makeHttpRequestWithPage(number)}>{number}</span>
         );
       });
-    }
+    }  
 
-     let  test = <div>cc</div>;
-
-    const { sendpost } = this.props;
-    let gotopost = (id,excerpt,content) => {
-      sendpost(id,excerpt,content)
+    let pagination = <div className="pagination">
+                        <span onClick={() => this.makeHttpRequestWithPage(1)}>&laquo;</span>
+                        {renderPageNumbers}
+                        <span onClick={() => this.makeHttpRequestWithPage(4)}>&raquo;</span>
+                    </div>  
+    var blogs;
+    if(loading){
+       blogs = <div className = "loading"><img src={logo} className = "loadingimage" alt="logo"/></div>
+    }else{
+       blogs =<div><div className="container">
+      <div className="row pt-8">
+        <div className="col-lg-10 offset-lg-1">
+          {excerpt ? 
+            <div className="card my-6"><div className="card-header">{excerpt}</div><div className="card-body">
+            {parse(content)}</div></div> :
+            <Posts articles = {articles}/>
+            }            
+        </div>
+      </div>
+          {pagination}
+          
+    </div>
+    <Footer/>
+   </div> 
     }
 
     return (
-      <div className="container">
-        <div className="row pt-5">
-          <div className="col-12 col-lg-6 offset-lg-3">
-            <Posts props = {articles}/>
-            {/* {articles.map((article) => {
-              return (
-                <div className="card my-3" key = {article['id']} onClick={() => gotopost(article['id'],article['title']['rendered'],article['content']['rendered'])}>
-                  <div className="card-header">
-                    {article['title']['rendered']}
-                  </div>
-                  <div className="card-body">
-                    {parse(article['excerpt']['rendered'])}
-                    <p className="mt-5 text-muted">{moment(new Date(article.date)).fromNow()}</p>
-                  </div>
-                </div>
-              )
-            })}           */}
-
-          </div>
-        </div>
-        <div className="pagination">
-          <span onClick={() => this.makeHttpRequestWithPage(1)}>&laquo;</span>
-          {renderPageNumbers}
-          <span onClick={() => this.makeHttpRequestWithPage(4)}>&raquo;</span>
-        </div>
-      </div>
+      <React.Fragment>
+            {blogs}
+      </React.Fragment>
     );
   }
 }
@@ -94,7 +90,8 @@ const mapStateToProps = state => ({
   per_page: state.home.per_page,
   current_page: state.home.current_page,
   excerpt:state.home.excerpt,
-  content:state.home.content
+  content:state.home.content,
+  loading:state.home.loading
 });
 
 const mapDispatchToProps = dispatch => ({

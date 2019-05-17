@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css?family=Nunito|Poppins:500|Open+Sans');
 @import "~bootstrap/scss/bootstrap";
 
-body, html {
+body, html,#root,.loading{
   height: 100%;
   background-color: rgba(0,0,0,.018);
   color: rgba(0,0,0,.75);
@@ -39,4 +39,14 @@ border: 1px solid #ddd;
 background-color: #0099FF;
 color: white;
 border: 1px solid #0099FF;
+}
+.loading{
+  position: relative;
+}
+
+.loadingimage{
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%,-50%);
 }
